@@ -1,11 +1,12 @@
 package com.example.blog.model
 
+import com.fasterxml.jackson.annotation.JacksonInject
 import org.hibernate.Hibernate
-import org.hibernate.annotations.GeneratorType
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import org.hibernate.annotations.GenericGenerator
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
-import org.springframework.data.jpa.repository.EntityGraph
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -21,21 +22,26 @@ data class Blog(
 
 
     @CreatedDate
-    val createdTime: LocalDateTime?,
+    val createdTime: LocalDateTime? = LocalDateTime.now(),
 
     @LastModifiedBy
-    val lastUpdateTime: LocalDateTime?,
+    val lastUpdateTime: LocalDateTime? = LocalDateTime.now(),
 
-    @Column(length = 4000 , nullable = false)
+    @Column(length = 10000 , nullable = false)
     val content: String,
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = [CascadeType.ALL])
-    @JoinColumn(name = "author_id" ,referencedColumnName = "author")
-    val author: Author?
+    @JoinColumn(name = "authors_id")
+    val author: Author? = null
+
 
 
 
 ) {
+    constructor(content: String , author: Author?): this(null, null, null,content,author){}
+
+
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
